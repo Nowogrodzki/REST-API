@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  rest-app:
+    container_name: rest-app
+    hostname: rest-app
+    build:
+      context: ./app
+      dockerfile: Dockerfile.dev
+
+    volumes:
+      - app:/app
+
+    ports:
+      - "5000:5000"
+
+    depends_on:
+      - db
+
+    environment:
+      PGHOST: db
+      PGPASSWORD: test123
+      PGUSER: postgres
+      PGDATABASE: GMIMovie
+
+    networks:
+      - backend-network
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: test123
+      POSTGRES_USER: postgres
+      POSTGRES_DB: GMIMovie
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+    networks:
+      - backend-network
+
+  db-admin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      POSTGRES_DB: GMIMovie
+    depends_on:
+      - db
+    links:
+      - "db:pgsql-server"
+    networks:
+      - backend-network
+    ports:
+      - "5001:80"
+
+networks:
+  backend-network:
+
+volumes:
+  app:
+  pgdata:
