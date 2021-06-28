@@ -14,22 +14,22 @@ npm run start
 
 * **Method:** `GET`
   
-*  **URL Params** **Optional:** `id=[integer] allows to filter by id if not provided, reponse will contain all movies saved in database`
+*  **URL Params** **Optional:** `id=[integer] allows to filter by id. If not provided, reponse will contain all movies saved in database`
 
 * **Success Response:**
 
-    **Content:** `{ status : true, message : { count: number(amountOfData), data: array_of_movie_object }}`
+    **Content:** `{ status : true, message : { count: number(amountOfData), data: array_of_movie_objects }}`
 #
 
 * **URL** `/list-comments`
 
 * **Method:** `GET`
   
-*  **URL Params** **Optional:** `id=[integer] allows to filter by id if not provided, reponse will contain all comments saved in database`
+*  **URL Params** **Optional:** `id=[integer] allows to filter by id. If not provided, reponse will contain all comments saved in database`
 
 * **Success Response:**
 
-    **Content:** `{ status : true, message : { count: number(amountOfData), data: array_of_commets }}`
+    **Content:** `{ status : true, message : { count: number(amountOfData), data: array_of_commets(which are not null) }}`
 #
 
 * **URL** `/create-movie`
