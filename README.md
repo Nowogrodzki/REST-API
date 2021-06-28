@@ -8,7 +8,7 @@ npm run start
 
 <h1 align="center">REST API</h1>
 
-                                  BASE_URL - `http://ec2-18-223-123-61.us-east-2.compute.amazonaws.com:5000`
+                              BASE_URL - `http://ec2-18-223-123-61.us-east-2.compute.amazonaws.com:5000`
 
 * **URL** `/list-movies`
 
