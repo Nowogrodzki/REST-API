@@ -24,7 +24,9 @@ class DB {
       );
       return { data: rows };
     }
-    const { rows } = await this.pool.query("SELECT id, title, comment FROM movies");
+    const { rows } = await this.pool.query(
+      "SELECT id, title, comment FROM movies WHERE comment IS NOT NULL"
+    );
     return { count: rows.length, data: rows };
   }
 
