@@ -1,17 +1,20 @@
 import { Request, Response } from "express";
 import { pool } from "../db/index";
-import { IAddComment, Movie, BodyId } from "../typescript/interface";
+import { IAddComment, Movie, BodyId, BodyTitle } from "../typescript/interface";
 import { handleResponse, handleListResponse } from "../util/index";
 import fetch from "node-fetch";
 
 const handleHomeRoute = (request: Request, response: Response) => {
-  return response.send(`<h1>REST-API SERVICE IS UP`);
+  return response.json({ live: true, message: "REST-API is working" });
 };
 
 const createMovieByTitle = async (request: Request, response: Response) => {
   try {
-    const { title }: { title: string } = request.body;
-    const url = `http://www.omdbapi.com/?t=${title}&apikey=${process.env.OMDb_API_KEY!}`;
+    const { title }: BodyTitle = request.body;
+    if (!title) {
+      return handleResponse(response, false, "Title is required also cannot be empty");
+    }
+    const url = `http://www.omdbapi.com/?t=${title}&apikey=${process.env.OMDb_API_KEY}`;
     const resp = await fetch(url);
     const data: Movie = await resp.json();
     if (data.Error) {

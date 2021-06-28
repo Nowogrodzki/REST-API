@@ -4,6 +4,10 @@ interface BodyId {
   id: number;
 }
 
+interface BodyTitle {
+  title: string;
+}
+
 interface IList {
   data: Movie[];
   count?: string | number;
@@ -60,4 +64,4 @@ interface Movie {
   Error?: string;
 }
 
-export { Controllers, Movie, IAddComment, BodyId, IList, MovieError };
+export { Controllers, Movie, IAddComment, BodyId, IList, MovieError, BodyTitle };
