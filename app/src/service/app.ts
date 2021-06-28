@@ -31,7 +31,7 @@ class App {
     });
   }
 
-  private controllers(controllers: any[]) {
+  private controllers(controllers: Array<Controllers>) {
     controllers.forEach((controller) => {
       this.app.use(controller.path, controller.router);
     });

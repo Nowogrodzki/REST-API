@@ -4,7 +4,7 @@ import { IAddComment, Movie, BodyId, BodyTitle } from "../typescript/interface";
 import { handleResponse, handleListResponse } from "../util/index";
 import fetch from "node-fetch";
 
-const handleHomeRoute = (request: Request, response: Response) => {
+const homeRoute = (request: Request, response: Response) => {
   return response.json({ live: true, message: "REST-API is working" });
 };
 
@@ -12,7 +12,7 @@ const createMovieByTitle = async (request: Request, response: Response) => {
   try {
     const { title }: BodyTitle = request.body;
     if (!title) {
-      return handleResponse(response, false, "Title is required also cannot be empty");
+      return handleResponse(response, false, "Title is required and cannot be empty");
     }
     const url = `http://www.omdbapi.com/?t=${title}&apikey=${process.env.OMDb_API_KEY}`;
     const resp = await fetch(url);
@@ -43,6 +43,9 @@ const listMovies = async (request: Request, response: Response) => {
 const addComment = async (request: Request, response: Response) => {
   try {
     const { comment, id }: IAddComment = request.body;
+    if (!id || !comment) {
+      return handleResponse(response, false, "comment and id is required as parameters");
+    }
     await pool.insertComment(comment, id);
     return handleResponse(response, true, "Comment successly added to the movie");
   } catch (e) {
@@ -62,4 +65,4 @@ const listComments = async (request: Request, response: Response) => {
     return handleResponse(response, false, e.message);
   }
 };
-export { handleHomeRoute, createMovieByTitle, listMovies, addComment, listComments };
+export { homeRoute, createMovieByTitle, listMovies, addComment, listComments };
