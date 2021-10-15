@@ -1,12 +1,35 @@
 import { Request, Response } from "express";
 import { pool } from "../db/index";
-import { IAddComment, Movie, BodyId, BodyTitle } from "../typescript/interface";
-import { handleResponse, handleListResponse } from "../util/index";
-import fetch from "node-fetch";
+import { IAddComment, BodyId, BodyTitle } from "../typescript/interface";
+import { handleResponse, handleListResponse, consumer } from "../util/index";
 
 const homeRoute = (request: Request, response: Response) => {
   return response.json({ live: true, message: "REST-API is working" });
 };
+
+const removeOneOrMany = async (request: Request, response: Response) => {
+  try {
+    const { id } = request.body;
+    await pool.delete(id);
+    return response.json({ message: `removed id - ${id}`})
+  } catch (e) {
+    return handleResponse(response, false, e.message);
+  }
+}
+
+const searchForMovie = async (request: Request, response: Response) => {
+  try {
+    const { phrase } = request.query;
+
+    if (!phrase) {
+      return response.json({ message: 'invalid parameter' });
+    }
+
+    return response.json(await consumer(phrase));
+  } catch (e) {
+    return handleResponse(response, false, e.message);
+  }
+}
 
 const createMovieByTitle = async (request: Request, response: Response) => {
   try {
@@ -14,9 +37,7 @@ const createMovieByTitle = async (request: Request, response: Response) => {
     if (!title) {
       return handleResponse(response, false, "Title is required and cannot be empty");
     }
-    const url = `http://www.omdbapi.com/?t=${title}&apikey=${process.env.OMDb_API_KEY}`;
-    const resp = await fetch(url);
-    const data: Movie = await resp.json();
+    const data = await consumer(title);
     if (data.Error) {
       return handleResponse(response, false, data.Error);
     }
@@ -65,4 +86,5 @@ const listComments = async (request: Request, response: Response) => {
     return handleResponse(response, false, e.message);
   }
 };
-export { homeRoute, createMovieByTitle, listMovies, addComment, listComments };
+
+export { homeRoute, createMovieByTitle, listMovies, addComment, listComments, searchForMovie, removeOneOrMany };

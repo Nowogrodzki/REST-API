@@ -12,7 +12,9 @@ class DB {
       const { rows } = await this.pool.query("SELECT * FROM movies WHERE id = $1", [id]);
       return { data: rows };
     }
+
     const { rows } = await this.pool.query("SELECT * FROM movies");
+
     return { count: rows.length, data: rows };
   }
 
@@ -24,9 +26,11 @@ class DB {
       );
       return { data: rows };
     }
+
     const { rows } = await this.pool.query(
       "SELECT id, title, comment FROM movies WHERE comment IS NOT NULL"
     );
+
     return { count: rows.length, data: rows };
   }
 
@@ -35,6 +39,7 @@ class DB {
       comment,
       id,
     ]);
+
     if (!rowCount) {
       throw new Error(`Cannot add comment, movie with that id does not exists,  id - ${id}`);
     }
@@ -48,10 +53,34 @@ class DB {
     await this.pool.query(`INSERT INTO movies (${keys}) VALUES (${valuesOrder})`, values);
   }
 
-  async checkIfMovieExists(title: string) {
-    const { rows } = await this.pool.query(`SELECT id FROM movies WHERE title = $1`, [title]);
-    if (rows.length) {
-      throw new Error(`The movie with this title exists, title - ${title}, id - ${rows[0].id}`);
+  async checkIfMovieExists(title?: string, id?: number | number[]) {
+    if (title) {
+      const { rows } = await this.pool.query(`SELECT id FROM movies WHERE title = $1`, [title]);
+      if (rows.length) {
+        throw new Error(`The movie with this title exists, title - ${title}, id - ${rows[0].id}`);
+      }
+    }
+    if (id) {
+      const { rows } = await this.pool.query(`SELECT id FROM movies WHERE id = $1`, [id]);
+      if (!rows.length) {
+        throw new Error(`The movie with id - ${id} does not exists`);
+      }
+    }
+  }
+
+  async delete(id: number | number[]) {
+    try {
+      if (Array.isArray(id) && id.every(item => typeof item === 'number')) {
+        for (const item of id) {
+          await this.checkIfMovieExists(undefined, item)
+          await this.pool.query(`DELETE FROM movies WHERE id = $1`, [item]);
+        }
+      } else {
+        await this.checkIfMovieExists(undefined, id)
+        await this.pool.query(`DELETE FROM movies WHERE id = $1`, [id]);
+      }
+    } catch(e) {
+      throw new Error(`ERROR - ${e.message}`);
     }
   }
 }
